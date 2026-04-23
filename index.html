@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="description" content="Splitwise for Pros. Track shared expenses, split fairly, settle in the fewest transactions." />
+<meta name="theme-color" content="#000000" />
+<title>Splitwise for Pros</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23000'/%3E%3Ctext x='50' y='70' font-family='-apple-system,BlinkMacSystemFont,Helvetica,Arial' font-size='62' font-weight='600' text-anchor='middle' fill='%23fff'%3E%C2%A7%3C/text%3E%3C/svg%3E" />
+<style>
+/* =============================================================
+   Design tokens — Apple-inspired system
+   ============================================================= */
+:root {
+  --canvas-black:   #000000;
+  --canvas-light:   #f5f5f7;
+  --canvas-white:   #ffffff;
+
+  --ink:            #1d1d1f;
+  --ink-on-dark:    #f5f5f7;
+  --gray-secondary: #6e6e73;
+  --gray-on-dark:   #a1a1a6;
+
+  --border-soft:    #d2d2d7;
+  --border-mid:     #86868b;
+  --border-dark:    #2a2a2c;
+
+  --graphite-a:     #1d1d1f;
+  --graphite-b:     #272729;
+  --graphite-c:     #28282b;
+  --graphite-d:     #2a2a2c;
+
+  --blue:           #0071e3;
+  --blue-hover:     #0077ed;
+  --blue-pressed:   #006edb;
+  --blue-link:      #0066cc;
+  --blue-bright:    #2997ff;
+  --blue-focus:     rgba(0, 113, 227, 0.35);
+  --blue-soft:      #e8f2fd;
+
+  --pos:            #1d8a4e;
+  --pos-soft:       #e8f4ec;
+  --neg:            #b8322e;
+  --neg-soft:       #fbeceb;
+
+  --r-micro:  5px;
+  --r-field:  8px;
+  --r-card:   18px;
+  --r-module: 28px;
+  --r-pill:   980px;
+
+  --f-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-text:    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-mono:    ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
+  --shadow-pop:  0 10px 40px rgba(0,0,0,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--f-text);
+  font-size: 17px;
+  line-height: 1.47059;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+  background: var(--canvas-light);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; color: inherit; }
+input, select, textarea, button { font-family: inherit; font-size: inherit; color: inherit; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+a { color: var(--blue-link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container {
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 22px;
+}
+@media (max-width: 640px) { .container { padding: 0 16px; } }
+
+/* ============ Hero (black showcase) ============ */
+.hero {
+  background: var(--canvas-black);
+  color: var(--ink-on-dark);
+  padding: 80px 0 96px;
+  position: relative;
+  overflow: hidden;
+}
+@media (max-width: 640px) { .hero { padding: 56px 0 72px; } }
+
+.hero-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 72px;
+}
+@media (max-width: 640px) { .hero-nav { margin-bottom: 48px; } }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--f-display);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--ink-on-dark);
+}
+.brand-mark {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  background: var(--ink-on-dark);
+  display: grid; place-items: center;
+  color: var(--canvas-black);
+  font-family: var(--f-display);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+.hero-meta {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: -0.08px;
+  color: var(--gray-on-dark);
+}
+
+.hero-title {
+  font-family: var(--f-display);
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin: 0 0 18px;
+  max-width: 760px;
+}
+.hero-title em {
+  font-style: normal;
+  color: var(--gray-on-dark);
+}
+.hero-sub {
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.38;
+  letter-spacing: 0.011em;
+  color: var(--gray-on-dark);
+  max-width: 560px;
+  margin: 0 0 56px;
+}
+@media (max-width: 640px) {
+  .hero-title { font-size: 38px; letter-spacing: -0.011em; }
+  .hero-sub { font-size: 17px; margin-bottom: 40px; }
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  background: var(--border-dark);
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border-dark);
+}
+.stat {
+  background: var(--graphite-b);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stat-eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--gray-on-dark);
+  text-transform: uppercase;
+}
+.stat-value {
+  font-family: var(--f-display);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.008em;
+  color: var(--ink-on-dark);
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+.stat-caption {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gray-on-dark);
+  letter-spacing: -0.12px;
+}
+@media (max-width: 720px) {
+  .stat-row { grid-template-columns: 1fr; }
+  .stat { padding: 18px 20px; }
+  .stat-value { font-size: 28px; }
+}
+
+/* ============ Content (light) ============ */
+.content {
+  background: var(--canvas-light);
+  padding: 56px 0 96px;
+}
+@media (max-width: 640px) { .content { padding: 36px 0 64px; } }
+
+.card {
+  background: var(--canvas-white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-card);
+  padding: 32px;
+  margin-bottom: 20px;
+}
+@media (max-width: 640px) { .card { padding: 22px; border-radius: 14px; } }
+
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.card-title {
+  font-family: var(--f-display);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -0.003em;
+  margin: 0;
+  color: var(--ink);
+}
+.card-sub {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray-secondary);
+  letter-spacing: -0.016em;
+}
+@media (max-width: 640px) { .card-title { font-size: 22px; } }
+
+/* ============ Fields ============ */
+.field { display: flex; flex-direction: column; gap: 8px; }
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-secondary);
+  letter-spacing: -0.016em;
+}
+.label .muted-note { color: var(--border-mid); font-weight: 400; }
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 15px;
+  line-height: 1.4;
+  letter-spacing: -0.016em;
+  color: var(--ink);
+  background: var(--canvas-white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-field);
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.input:hover, .select:hover, .textarea:hover { border-color: var(--border-mid); }
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px var(--blue-focus);
+}
+.input::placeholder, .textarea::placeholder { color: var(--border-mid); }
+.input-num {
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20'%3E%3Cpath fill='%2386868b' d='M5.5 7.5L10 12l4.5-4.5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 34px;
+}
+.input-error {
+  border-color: var(--neg) !important;
+  box-shadow: 0 0 0 4px rgba(184,50,46,0.12) !important;
+}
+.err-msg {
+  font-size: 12px;
+  color: var(--neg);
+  letter-spacing: -0.08px;
+  display: none;
+}
+.err-msg.visible { display: block; }
+
+/* ============ Buttons ============ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  transition: background .16s ease, border-color .16s ease, color .16s ease, transform .1s ease, box-shadow .16s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+.btn:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--blue-focus); }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary { background: var(--blue); color: var(--canvas-white); }
+.btn-primary:hover { background: var(--blue-hover); }
+.btn-primary:active { background: var(--blue-pressed); }
+
+.btn-secondary {
+  background: var(--canvas-white);
+  color: var(--ink);
+  border-color: var(--border-soft);
+}
+.btn-secondary:hover { border-color: var(--border-mid); background: #fafafa; }
+
+.btn-ghost { background: transparent; color: var(--gray-secondary); padding: 8px 14px; }
+.btn-ghost:hover { color: var(--ink); background: rgba(0,0,0,0.04); }
+
+.btn-danger {
+  background: var(--canvas-white);
+  color: var(--neg);
+  border-color: #e8c9c7;
+}
+.btn-danger:hover { background: var(--neg-soft); border-color: #d9b0ad; }
+
+.btn-sm { padding: 7px 14px; font-size: 13px; }
+.btn-square { border-radius: var(--r-field); }
+
+/* ============ Grids ============ */
+.grid-2 { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-3 { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 14px; }
+}
+.full-row { grid-column: 1 / -1; }
+
+/* ============ Roommate chips ============ */
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 6px 7px 14px;
+  background: var(--canvas-light);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  letter-spacing: -0.016em;
+  color: var(--ink);
+}
+.chip-remove {
+  display: grid; place-items: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  color: var(--border-mid);
+  transition: background .15s ease, color .15s ease;
+}
+.chip-remove:hover { background: var(--neg-soft); color: var(--neg); }
+
+.roommate-add { display: flex; gap: 10px; align-items: stretch; }
+.roommate-add .input { flex: 1; }
+
+.empty-hint {
+  padding: 14px 16px;
+  background: #fff8e6;
+  border: 1px solid #f0dfa3;
+  border-radius: var(--r-field);
+  color: #7b5b12;
+  font-size: 13px;
+  letter-spacing: -0.12px;
+  margin-bottom: 14px;
+}
+
+/* ============ Split-among pills (Apple circular radio feel) ============ */
+.checkbox-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.check-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px 9px 14px;
+  background: var(--canvas-white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  letter-spacing: -0.016em;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  transition: background .16s ease, border-color .16s ease, color .16s ease;
+}
+.check-pill:hover { border-color: var(--border-mid); }
+.check-pill input { position: absolute; opacity: 0; pointer-events: none; inset: 0; }
+.check-pill .box {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--border-mid);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--canvas-white);
+  transition: background .16s ease, border-color .16s ease;
+  flex-shrink: 0;
+}
+.check-pill .box svg { opacity: 0; transform: scale(.6); transition: opacity .12s ease, transform .12s ease; }
+.check-pill.checked {
+  background: var(--blue-soft);
+  border-color: var(--blue);
+  color: var(--blue-link);
+}
+.check-pill.checked .box { background: var(--blue); border-color: var(--blue); }
+.check-pill.checked .box svg { opacity: 1; transform: scale(1); }
+
+/* ============ Filters ============ */
+.filters { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid var(--border-soft); }
+
+/* ============ Tables ============ */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-field);
+  background: var(--canvas-white);
+  -webkit-overflow-scrolling: touch;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 680px;
+}
+thead th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--gray-secondary);
+  padding: 14px 16px;
+  background: var(--canvas-light);
+  border-bottom: 1px solid var(--border-soft);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+tbody td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: middle;
+  letter-spacing: -0.016em;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #fbfbfc; }
+.num {
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.ta-right { text-align: right; }
+
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--border-mid);
+  font-size: 15px;
+  letter-spacing: -0.016em;
+}
+
+/* ============ Category pills ============ */
+.cat {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.08px;
+}
+.cat-Groceries  { background: #e8f4ec; color: #1d6b3c; }
+.cat-Fuel       { background: #fbefe2; color: #8a4215; }
+.cat-Utilities  { background: #e8eff9; color: #1a4e9a; }
+.cat-Dining     { background: #fbeaf0; color: #8a2450; }
+.cat-Other      { background: #eeeef0; color: #424245; }
+
+/* ============ Balance ============ */
+.bal { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 600; }
+.bal-pos { color: var(--pos); }
+.bal-neg { color: var(--neg); }
+.bal-zero { color: var(--border-mid); }
+
+/* ============ Settlements ============ */
+.settlement-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.settlement {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--canvas-light);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-field);
+  font-size: 15px;
+  letter-spacing: -0.016em;
+}
+.settlement .arrow { color: var(--blue); font-family: var(--f-mono); font-weight: 600; margin: 0 2px; }
+.settlement .amt {
+  margin-left: auto;
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+}
+.all-settled {
+  padding: 28px 20px;
+  text-align: center;
+  background: var(--pos-soft);
+  border: 1px solid #c4e4cf;
+  border-radius: var(--r-field);
+  color: var(--pos);
+  font-size: 15px;
+  letter-spacing: -0.016em;
+}
+.all-settled svg { display: inline-block; vertical-align: middle; margin-right: 6px; }
+
+/* ============ Icon buttons ============ */
+.icon-btn {
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  border-radius: var(--r-field);
+  color: var(--border-mid);
+  transition: background .15s ease, color .15s ease;
+}
+.icon-btn:hover { background: var(--neg-soft); color: var(--neg); }
+
+/* ============ Footer-actions card ============ */
+.footer-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.footer-actions .group { display: flex; gap: 10px; flex-wrap: wrap; }
+.privacy-note { margin-top: 14px; color: var(--gray-secondary); font-size: 12px; letter-spacing: -0.08px; }
+
+/* ============ Dark site footer ============ */
+.site-footer {
+  background: var(--canvas-black);
+  color: var(--gray-on-dark);
+  padding: 40px 0 48px;
+  font-size: 12px;
+  letter-spacing: -0.08px;
+  text-align: center;
+  border-top: 1px solid var(--border-dark);
+}
+.site-footer a { color: var(--blue-bright); }
+.site-footer a:hover { color: var(--canvas-white); }
+.site-footer .foot-brand {
+  color: var(--canvas-white);
+  font-family: var(--f-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ============ Toast ============ */
+.toast {
+  position: fixed; left: 50%; bottom: 28px;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: var(--canvas-white);
+  padding: 12px 20px;
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  letter-spacing: -0.016em;
+  box-shadow: var(--shadow-pop);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+  z-index: 60;
+}
+.toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ============ Modal ============ */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 70;
+  padding: 20px;
+  animation: fade .18s ease;
+}
+.modal-backdrop.visible { display: flex; }
+.modal {
+  background: var(--canvas-white);
+  border-radius: 18px;
+  padding: 28px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: var(--shadow-pop);
+  animation: pop .22s ease;
+}
+.modal h3 {
+  margin: 0 0 8px;
+  font-family: var(--f-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.003em;
+  color: var(--ink);
+}
+.modal p {
+  margin: 0 0 22px;
+  color: var(--gray-secondary);
+  font-size: 15px;
+  letter-spacing: -0.016em;
+}
+.modal .row { display: flex; justify-content: flex-end; gap: 10px; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ============ Entrance animations ============ */
+.fade-in { opacity: 0; transform: translateY(12px); animation: slideFade .8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
+.fade-in-1 { animation-delay: .05s; }
+.fade-in-2 { animation-delay: .15s; }
+.fade-in-3 { animation-delay: .25s; }
+@keyframes slideFade { to { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0ms !important; transition-duration: 0ms !important; }
+  .fade-in { opacity: 1; transform: none; }
+}
+
+/* ============ Safe-area ============ */
+@supports (padding: max(0px)) {
+  .container { padding-left: max(22px, env(safe-area-inset-left)); padding-right: max(22px, env(safe-area-inset-right)); }
+  @media (max-width: 640px) {
+    .container { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ====================== HERO ====================== -->
+<header class="hero">
+  <div class="container">
+    <nav class="hero-nav">
+      <div class="brand">
+        <span class="brand-mark">§</span>
+        <span>Splitwise for Pros</span>
+      </div>
+      <span class="hero-meta">Private · Browser-local · No account</span>
+    </nav>
+
+    <h1 class="hero-title fade-in fade-in-1">
+      Roommate expenses, <em>split perfectly.</em>
+    </h1>
+    <p class="hero-sub fade-in fade-in-2">
+      Log shared bills, see who owes whom, and settle with the fewest transactions. No sign-ups, no servers — everything stays in your browser.
+    </p>
+
+    <div class="stat-row fade-in fade-in-3" aria-live="polite">
+      <div class="stat">
+        <span class="stat-eyebrow">Total spent</span>
+        <span class="stat-value" id="runTotal">$0.00</span>
+        <span class="stat-caption" id="runCountCap">Across 0 bills</span>
+      </div>
+      <div class="stat">
+        <span class="stat-eyebrow">Roommates</span>
+        <span class="stat-value" id="runRoommates">0</span>
+        <span class="stat-caption" id="runRoommateCap">Add people to start</span>
+      </div>
+      <div class="stat">
+        <span class="stat-eyebrow">Outstanding</span>
+        <span class="stat-value" id="runOutstanding">$0.00</span>
+        <span class="stat-caption" id="runOutstandingCap">Nothing to settle</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ====================== CONTENT ====================== -->
+<main class="content">
+  <div class="container">
+
+    <section class="card" aria-labelledby="roomHead">
+      <div class="card-head">
+        <h2 class="card-title" id="roomHead">Roommates</h2>
+        <span class="card-sub">Everyone sharing expenses</span>
+      </div>
+      <div id="roommateChips" class="chip-list"></div>
+      <div id="roommateEmpty" class="empty-hint" style="display:none;">
+        Add at least one roommate to start tracking bills.
+      </div>
+      <form id="roommateForm" class="roommate-add" novalidate>
+        <input type="text" id="roommateInput" class="input" placeholder="Add a roommate's name…" maxlength="40" aria-label="New roommate name" />
+        <button type="submit" class="btn btn-primary">Add</button>
+      </form>
+      <div id="roommateError" class="err-msg" style="margin-top:8px;"></div>
+    </section>
+
+    <section class="card" aria-labelledby="billHead">
+      <div class="card-head">
+        <h2 class="card-title" id="billHead">Add a bill</h2>
+        <span class="card-sub">Split equally among selected names</span>
+      </div>
+
+      <form id="billForm" novalidate>
+        <div class="grid-2">
+          <div class="field full-row">
+            <label class="label" for="billName">Bill name</label>
+            <input type="text" id="billName" class="input" placeholder='e.g. "Walmart Run"' maxlength="60" />
+            <div class="err-msg" data-err-for="billName"></div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="billCategory">Category</label>
+            <select id="billCategory" class="select">
+              <option>Groceries</option>
+              <option>Fuel</option>
+              <option>Utilities</option>
+              <option>Dining</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="label" for="billDate">Date</label>
+            <input type="date" id="billDate" class="input" />
+          </div>
+
+          <div class="field">
+            <label class="label" for="billPaidBy">Paid by</label>
+            <select id="billPaidBy" class="select"></select>
+            <div class="err-msg" data-err-for="billPaidBy"></div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="billTotal">Total amount</label>
+            <input type="number" id="billTotal" class="input input-num" placeholder="0.00" step="0.01" min="0" inputmode="decimal" />
+            <div class="err-msg" data-err-for="billTotal"></div>
+          </div>
+
+          <div class="field full-row">
+            <label class="label">Split among</label>
+            <div id="billSplit" class="checkbox-grid" role="group" aria-label="Roommates to split among"></div>
+            <div class="err-msg" data-err-for="billSplit"></div>
+          </div>
+
+          <div class="field full-row">
+            <label class="label" for="billNotes">Notes <span class="muted-note">— optional</span></label>
+            <input type="text" id="billNotes" class="input" placeholder="Add a short note…" maxlength="120" />
+          </div>
+        </div>
+
+        <div style="margin-top:24px; display:flex; gap:12px; flex-wrap:wrap;">
+          <button type="submit" class="btn btn-primary">Add bill</button>
+          <button type="button" id="resetBillBtn" class="btn btn-ghost">Reset form</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="billsHead">
+      <div class="card-head">
+        <h2 class="card-title" id="billsHead">Bills</h2>
+        <span class="card-sub" id="billsCountSub">0 entries</span>
+      </div>
+
+      <div class="filters">
+        <div class="grid-3">
+          <div class="field">
+            <label class="label" for="filterFrom">From</label>
+            <input type="date" id="filterFrom" class="input" />
+          </div>
+          <div class="field">
+            <label class="label" for="filterTo">To</label>
+            <input type="date" id="filterTo" class="input" />
+          </div>
+          <div class="field">
+            <label class="label" for="filterCat">Category</label>
+            <select id="filterCat" class="select">
+              <option value="">All categories</option>
+              <option>Groceries</option>
+              <option>Fuel</option>
+              <option>Utilities</option>
+              <option>Dining</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="billsTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Bill name</th>
+              <th>Category</th>
+              <th>Paid by</th>
+              <th class="ta-right">Total</th>
+              <th>Split among</th>
+              <th class="ta-right">Per person</th>
+              <th aria-label="actions"></th>
+            </tr>
+          </thead>
+          <tbody id="billsBody"></tbody>
+        </table>
+      </div>
+      <div id="billsEmpty" class="empty-state">No bills yet. Add your first above.</div>
+    </section>
+
+    <section class="card" aria-labelledby="sumHead">
+      <div class="card-head">
+        <h2 class="card-title" id="sumHead">Summary</h2>
+        <span class="card-sub">Based on bills currently in view</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Roommate</th>
+              <th class="ta-right">Total paid</th>
+              <th class="ta-right">Total owed</th>
+              <th class="ta-right">Net balance</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+      </div>
+      <div id="summaryEmpty" class="empty-state">Nothing to summarize yet.</div>
+    </section>
+
+    <section class="card" aria-labelledby="setHead">
+      <div class="card-head">
+        <h2 class="card-title" id="setHead">Settle up</h2>
+        <span class="card-sub">Fewest transactions to square up</span>
+      </div>
+      <ul id="settlementList" class="settlement-list"></ul>
+      <div id="settlementEmpty" class="empty-state">No settlements needed yet.</div>
+    </section>
+
+    <section class="card">
+      <div class="footer-actions">
+        <div class="group">
+          <button type="button" id="exportBtn" class="btn btn-secondary btn-square">Export CSV</button>
+        </div>
+        <div class="group">
+          <button type="button" id="clearAllBtn" class="btn btn-danger btn-square">Clear all data</button>
+        </div>
+      </div>
+      <p class="privacy-note">
+        All data lives in this browser only (<code style="font-family:var(--f-mono);font-size:11px;">localStorage</code>). Nothing is transmitted anywhere.
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<!-- ====================== DARK FOOTER ====================== -->
+<footer class="site-footer">
+  <div class="container">
+    <span class="foot-brand">Splitwise for Pros</span>
+    Built with care · <a href="https://github.com/just-bharadwaj" target="_blank" rel="noopener">github.com/just-bharadwaj</a>
+  </div>
+</footer>
+
+<!-- ====================== TOAST + MODAL ====================== -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <h3 id="modalTitle">Are you sure?</h3>
+    <p id="modalText">This action can't be undone.</p>
+    <div class="row">
+      <button type="button" class="btn btn-secondary btn-square" id="modalCancel">Cancel</button>
+      <button type="button" class="btn btn-primary btn-square" id="modalConfirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const LS_ROOMMATES = 'splitly.roommates.v1';
+  const LS_BILLS     = 'splitly.bills.v1';
+
+  let roommates = loadRoommates();
+  let bills     = loadBills();
+
+  const $  = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+  function uid() { return 'b_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
+  function todayISO() {
+    const d = new Date();
+    return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  }
+  function fmt(n) {
+    return '$' + Number(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  function loadRoommates() {
+    try {
+      const raw = localStorage.getItem(LS_ROOMMATES);
+      if (raw) { const a = JSON.parse(raw); if (Array.isArray(a)) return a.filter(n => typeof n === 'string'); }
+    } catch (e) {}
+    return [];
+  }
+  function loadBills() {
+    try {
+      const raw = localStorage.getItem(LS_BILLS);
+      if (raw) { const a = JSON.parse(raw); if (Array.isArray(a)) return a; }
+    } catch (e) {}
+    return [];
+  }
+  function saveRoommates() { localStorage.setItem(LS_ROOMMATES, JSON.stringify(roommates)); }
+  function saveBills()     { localStorage.setItem(LS_BILLS, JSON.stringify(bills)); }
+
+  // Split: first person absorbs remainder cents
+  function splitShares(total, count) {
+    const cents = Math.round(Number(total) * 100);
+    const base = Math.floor(cents / count);
+    const remainder = cents - base * count;
+    const shares = new Array(count).fill(base / 100);
+    shares[0] = (base + remainder) / 100;
+    return shares;
+  }
+
+  // Greedy min-transactions settlement
+  function computeSettlements(nets) {
+    const people = Object.entries(nets).map(([name, net]) => ({ name, cents: Math.round(net * 100) }));
+    const creditors = people.filter(p => p.cents > 0).sort((a,b) => b.cents - a.cents);
+    const debtors   = people.filter(p => p.cents < 0).sort((a,b) => a.cents - b.cents);
+    const out = [];
+    let i = 0, j = 0;
+    while (i < creditors.length && j < debtors.length) {
+      const pay = Math.min(creditors[i].cents, -debtors[j].cents);
+      if (pay > 0) {
+        out.push({ from: debtors[j].name, to: creditors[i].name, amount: pay / 100 });
+        creditors[i].cents -= pay;
+        debtors[j].cents   += pay;
+      }
+      if (creditors[i].cents === 0) i++;
+      if (debtors[j].cents === 0)   j++;
+    }
+    return out;
+  }
+
+  function getFilteredBills() {
+    const from = $('#filterFrom').value;
+    const to   = $('#filterTo').value;
+    const cat  = $('#filterCat').value;
+    return bills.filter(b => {
+      if (from && b.date < from) return false;
+      if (to && b.date > to) return false;
+      if (cat && b.category !== cat) return false;
+      return true;
+    }).sort((a,b) => (b.date.localeCompare(a.date)) || (b.createdAt - a.createdAt));
+  }
+
+  function renderRoommates() {
+    const wrap = $('#roommateChips');
+    const empty = $('#roommateEmpty');
+    wrap.innerHTML = '';
+    if (roommates.length === 0) {
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      roommates.forEach(name => {
+        const chip = document.createElement('span');
+        chip.className = 'chip';
+        chip.innerHTML = `${escapeHTML(name)}
+          <button class="chip-remove" aria-label="Remove ${escapeHTML(name)}" data-remove="${escapeHTML(name)}">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5L15 15M15 5L5 15"/></svg>
+          </button>`;
+        wrap.appendChild(chip);
+      });
+    }
+    renderPaidByOptions();
+    renderSplitCheckboxes();
+  }
+
+  function renderPaidByOptions() {
+    const sel = $('#billPaidBy');
+    const prev = sel.value;
+    sel.innerHTML = '';
+    if (roommates.length === 0) {
+      const o = document.createElement('option');
+      o.value = ''; o.disabled = true; o.selected = true;
+      o.textContent = 'Add a roommate first';
+      sel.appendChild(o);
+      return;
+    }
+    roommates.forEach(n => {
+      const o = document.createElement('option');
+      o.value = n; o.textContent = n;
+      sel.appendChild(o);
+    });
+    if (roommates.includes(prev)) sel.value = prev;
+  }
+
+  function renderSplitCheckboxes() {
+    const wrap = $('#billSplit');
+    const checkedNow = new Set([...wrap.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value));
+    wrap.innerHTML = '';
+    if (roommates.length === 0) {
+      wrap.innerHTML = '<span style="color:var(--border-mid); font-size:13px;">Add roommates to enable splitting.</span>';
+      return;
+    }
+    roommates.forEach(name => {
+      const id = 'split_' + name.replace(/\W/g, '_');
+      const checked = checkedNow.size === 0 ? true : checkedNow.has(name);
+      const lbl = document.createElement('label');
+      lbl.className = 'check-pill' + (checked ? ' checked' : '');
+      lbl.innerHTML = `
+        <input type="checkbox" id="${id}" value="${escapeHTML(name)}" ${checked ? 'checked' : ''}>
+        <span class="box"><svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,11 8,15 16,6"/></svg></span>
+        <span>${escapeHTML(name)}</span>`;
+      wrap.appendChild(lbl);
+    });
+  }
+
+  function renderBills() {
+    const filtered = getFilteredBills();
+    const body = $('#billsBody');
+    const empty = $('#billsEmpty');
+    body.innerHTML = '';
+
+    if (filtered.length === 0) {
+      $('#billsTable').style.display = 'none';
+      empty.style.display = 'block';
+    } else {
+      $('#billsTable').style.display = '';
+      empty.style.display = 'none';
+      filtered.forEach(b => {
+        const cents = Math.round(b.total * 100);
+        const baseCents = Math.floor(cents / b.splitAmong.length);
+        const remainder = cents - baseCents * b.splitAmong.length;
+        const base = baseCents / 100;
+        const perPerson = remainder > 0
+          ? `${fmt(base)}<span style="color:var(--border-mid);font-size:11px;"> · +${fmt(remainder/100)} first</span>`
+          : fmt(base);
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="num">${escapeHTML(b.date)}</td>
+          <td>
+            <div style="font-weight:500;">${escapeHTML(b.name)}</div>
+            ${b.notes ? `<div style="font-size:12px;color:var(--border-mid);margin-top:3px;letter-spacing:-0.08px;">${escapeHTML(b.notes)}</div>` : ''}
+          </td>
+          <td><span class="cat cat-${escapeHTML(b.category)}">${escapeHTML(b.category)}</span></td>
+          <td>${escapeHTML(b.paidBy)}</td>
+          <td class="num ta-right">${fmt(b.total)}</td>
+          <td style="font-size:13px; color:var(--gray-secondary); letter-spacing:-0.12px;">${b.splitAmong.map(escapeHTML).join(', ')}</td>
+          <td class="num ta-right">${perPerson}</td>
+          <td class="ta-right">
+            <button class="icon-btn" data-del="${escapeHTML(b.id)}" aria-label="Delete bill">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h14M8 6V4h4v2M6 6l1 11h6l1-11"/>
+              </svg>
+            </button>
+          </td>`;
+        body.appendChild(row);
+      });
+    }
+
+    $('#billsCountSub').textContent = filtered.length + (filtered.length === 1 ? ' entry' : ' entries');
+    updateHeroStats();
+    renderSummary(filtered);
+    renderSettlements(filtered);
+  }
+
+  function updateHeroStats() {
+    const totalSpent = bills.reduce((s,b) => s + Number(b.total), 0);
+    $('#runTotal').textContent = fmt(totalSpent);
+    $('#runCountCap').textContent = 'Across ' + bills.length + (bills.length === 1 ? ' bill' : ' bills');
+
+    $('#runRoommates').textContent = roommates.length;
+    $('#runRoommateCap').textContent = roommates.length === 0
+      ? 'Add people to start'
+      : (roommates.length === 1 ? '1 person tracked' : roommates.length + ' people tracked');
+
+    const set = new Set(roommates);
+    bills.forEach(b => { set.add(b.paidBy); b.splitAmong.forEach(p => set.add(p)); });
+    const paid = {}, owed = {};
+    [...set].forEach(n => { paid[n] = 0; owed[n] = 0; });
+    bills.forEach(b => {
+      paid[b.paidBy] = (paid[b.paidBy] || 0) + Number(b.total);
+      const shares = splitShares(b.total, b.splitAmong.length);
+      b.splitAmong.forEach((n,i) => { owed[n] = (owed[n] || 0) + shares[i]; });
+    });
+    let outstanding = 0;
+    [...set].forEach(n => {
+      const net = (paid[n] || 0) - (owed[n] || 0);
+      if (net > 0.005) outstanding += net;
+    });
+    $('#runOutstanding').textContent = fmt(outstanding);
+    $('#runOutstandingCap').textContent = outstanding < 0.005 ? 'Nothing to settle' : 'Across the group';
+  }
+
+  function renderSummary(filtered) {
+    const body = $('#summaryBody');
+    const empty = $('#summaryEmpty');
+    body.innerHTML = '';
+
+    if (filtered.length === 0) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+
+    const set = new Set(roommates);
+    filtered.forEach(b => { set.add(b.paidBy); b.splitAmong.forEach(p => set.add(p)); });
+
+    const paid = {}, owed = {};
+    [...set].forEach(n => { paid[n] = 0; owed[n] = 0; });
+    filtered.forEach(b => {
+      paid[b.paidBy] = (paid[b.paidBy] || 0) + Number(b.total);
+      const shares = splitShares(b.total, b.splitAmong.length);
+      b.splitAmong.forEach((n,i) => { owed[n] = (owed[n] || 0) + shares[i]; });
+    });
+
+    const rows = [...set].map(name => {
+      const p = paid[name] || 0;
+      const o = owed[name] || 0;
+      const net = Math.round((p - o) * 100) / 100;
+      return { name, p, o, net };
+    }).sort((a,b) => b.net - a.net || a.name.localeCompare(b.name));
+
+    rows.forEach(r => {
+      const cls = r.net > 0.005 ? 'bal-pos' : r.net < -0.005 ? 'bal-neg' : 'bal-zero';
+      const sign = r.net > 0.005 ? '+' : r.net < -0.005 ? '−' : '';
+      const absVal = Math.abs(r.net);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight:500;">${escapeHTML(r.name)}</td>
+        <td class="num ta-right">${fmt(r.p)}</td>
+        <td class="num ta-right">${fmt(r.o)}</td>
+        <td class="num ta-right bal ${cls}">${sign}${fmt(absVal)}</td>`;
+      body.appendChild(tr);
+    });
+
+    renderSummary._nets = Object.fromEntries(rows.map(r => [r.name, r.net]));
+  }
+
+  function renderSettlements(filtered) {
+    const list = $('#settlementList');
+    const empty = $('#settlementEmpty');
+    list.innerHTML = '';
+
+    if (filtered.length === 0 || !renderSummary._nets) {
+      empty.style.display = 'block';
+      empty.className = 'empty-state';
+      empty.textContent = 'No settlements needed yet.';
+      return;
+    }
+    const tx = computeSettlements(renderSummary._nets);
+    if (tx.length === 0) {
+      empty.style.display = 'block';
+      empty.className = '';
+      empty.innerHTML = `<div class="all-settled">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,11 8,15 16,6"/></svg>
+        All square. Nobody owes anybody.</div>`;
+      return;
+    }
+    empty.style.display = 'none';
+    tx.forEach(t => {
+      const li = document.createElement('li');
+      li.className = 'settlement';
+      li.innerHTML = `
+        <span><strong>${escapeHTML(t.from)}</strong> <span class="arrow">→</span> <strong>${escapeHTML(t.to)}</strong></span>
+        <span class="amt">${fmt(t.amount)}</span>`;
+      list.appendChild(li);
+    });
+  }
+
+  function setErr(id, msg) {
+    const el = document.querySelector(`.err-msg[data-err-for="${id}"]`);
+    const inp = document.getElementById(id);
+    if (el) { el.textContent = msg || ''; el.classList.toggle('visible', !!msg); }
+    if (inp) inp.classList.toggle('input-error', !!msg);
+  }
+  function clearErrs() {
+    $$('.err-msg').forEach(el => { el.textContent = ''; el.classList.remove('visible'); });
+    $$('.input-error').forEach(el => el.classList.remove('input-error'));
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('visible'), 2300);
+  }
+
+  function confirmModal({ title, text, confirmLabel = 'Confirm', danger = false }) {
+    return new Promise(resolve => {
+      const backdrop = $('#modalBackdrop');
+      $('#modalTitle').textContent = title;
+      $('#modalText').textContent  = text;
+      const ok = $('#modalConfirm');
+      ok.textContent = confirmLabel;
+      ok.className = 'btn btn-square ' + (danger ? 'btn-danger' : 'btn-primary');
+      backdrop.classList.add('visible');
+
+      const done = (v) => {
+        backdrop.classList.remove('visible');
+        ok.removeEventListener('click', onOk);
+        $('#modalCancel').removeEventListener('click', onCancel);
+        backdrop.removeEventListener('click', onBg);
+        document.removeEventListener('keydown', onKey);
+        resolve(v);
+      };
+      const onOk = () => done(true);
+      const onCancel = () => done(false);
+      const onBg = (e) => { if (e.target === backdrop) done(false); };
+      const onKey = (e) => { if (e.key === 'Escape') done(false); };
+      ok.addEventListener('click', onOk);
+      $('#modalCancel').addEventListener('click', onCancel);
+      backdrop.addEventListener('click', onBg);
+      document.addEventListener('keydown', onKey);
+      setTimeout(() => ok.focus(), 40);
+    });
+  }
+
+  $('#roommateForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const inp = $('#roommateInput');
+    const err = $('#roommateError');
+    const name = inp.value.trim();
+    err.classList.remove('visible'); err.textContent = '';
+    inp.classList.remove('input-error');
+
+    if (!name) {
+      err.textContent = 'Enter a name first.';
+      err.classList.add('visible'); inp.classList.add('input-error');
+      return;
+    }
+    if (roommates.some(r => r.toLowerCase() === name.toLowerCase())) {
+      err.textContent = 'That name is already on the list.';
+      err.classList.add('visible'); inp.classList.add('input-error');
+      return;
+    }
+    if (name.length > 40) {
+      err.textContent = 'Keep names under 40 characters.';
+      err.classList.add('visible'); inp.classList.add('input-error');
+      return;
+    }
+    roommates.push(name);
+    saveRoommates();
+    inp.value = '';
+    renderRoommates();
+    renderBills();
+    toast(`Added ${name}`);
+  });
+
+  $('#roommateChips').addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-remove]');
+    if (!btn) return;
+    const name = btn.getAttribute('data-remove');
+    const refs = bills.filter(b => b.paidBy === name || b.splitAmong.includes(name)).length;
+    const text = refs > 0
+      ? `${name} appears in ${refs} existing bill${refs === 1 ? '' : 's'}. They'll be removed from new-bill dropdowns, but past records stay intact.`
+      : `Remove ${name} from the roommate list?`;
+    const ok = await confirmModal({ title: `Remove ${name}?`, text, confirmLabel: 'Remove', danger: true });
+    if (!ok) return;
+    roommates = roommates.filter(n => n !== name);
+    saveRoommates();
+    renderRoommates();
+    renderBills();
+    toast(`Removed ${name}`);
+  });
+
+  $('#billSplit').addEventListener('change', (e) => {
+    if (e.target && e.target.type === 'checkbox') {
+      e.target.closest('.check-pill').classList.toggle('checked', e.target.checked);
+      setErr('billSplit', '');
+    }
+  });
+
+  $('#billForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearErrs();
+
+    const name = $('#billName').value.trim();
+    const category = $('#billCategory').value;
+    const date = $('#billDate').value || todayISO();
+    const paidBy = $('#billPaidBy').value;
+    const total = parseFloat($('#billTotal').value);
+    const notes = $('#billNotes').value.trim();
+    const splitAmong = [...$('#billSplit').querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
+
+    let firstErr = null;
+    if (!name) { setErr('billName', 'Give this bill a short name.'); firstErr = firstErr || 'billName'; }
+    if (roommates.length === 0) { setErr('billPaidBy', 'Add at least one roommate first.'); firstErr = firstErr || 'billPaidBy'; }
+    else if (!paidBy) { setErr('billPaidBy', 'Select who paid.'); firstErr = firstErr || 'billPaidBy'; }
+    if (isNaN(total) || total <= 0) { setErr('billTotal', 'Amount must be greater than zero.'); firstErr = firstErr || 'billTotal'; }
+    if (splitAmong.length === 0) { setErr('billSplit', 'Select at least one person to split among.'); firstErr = firstErr || 'billSplit'; }
+
+    if (firstErr) {
+      const target = document.getElementById(firstErr);
+      if (target && target.focus) target.focus();
+      return;
+    }
+
+    bills.push({
+      id: uid(),
+      name, category, date, paidBy,
+      total: Math.round(total * 100) / 100,
+      splitAmong, notes,
+      createdAt: Date.now()
+    });
+    saveBills();
+
+    $('#billName').value = '';
+    $('#billTotal').value = '';
+    $('#billNotes').value = '';
+    $$('#billSplit input[type="checkbox"]').forEach(c => {
+      c.checked = true;
+      c.closest('.check-pill').classList.add('checked');
+    });
+
+    renderBills();
+    toast('Bill added');
+  });
+
+  $('#resetBillBtn').addEventListener('click', () => {
+    clearErrs();
+    $('#billName').value = '';
+    $('#billTotal').value = '';
+    $('#billNotes').value = '';
+    $('#billDate').value = todayISO();
+    $('#billCategory').value = 'Groceries';
+    if (roommates.length > 0) $('#billPaidBy').value = roommates[0];
+    $$('#billSplit input[type="checkbox"]').forEach(c => {
+      c.checked = true;
+      c.closest('.check-pill').classList.add('checked');
+    });
+  });
+
+  ['billName','billTotal','billPaidBy'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => setErr(id, ''));
+    el.addEventListener('change', () => setErr(id, ''));
+  });
+
+  ['filterFrom','filterTo','filterCat'].forEach(id => {
+    $('#' + id).addEventListener('change', renderBills);
+  });
+
+  $('#billsBody').addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-del]');
+    if (!btn) return;
+    const id = btn.getAttribute('data-del');
+    const b = bills.find(x => x.id === id);
+    if (!b) return;
+    const ok = await confirmModal({
+      title: 'Delete this bill?',
+      text: `"${b.name}" · ${fmt(b.total)} on ${b.date}. This can't be undone.`,
+      confirmLabel: 'Delete', danger: true
+    });
+    if (!ok) return;
+    bills = bills.filter(x => x.id !== id);
+    saveBills();
+    renderBills();
+    toast('Bill deleted');
+  });
+
+  $('#exportBtn').addEventListener('click', () => {
+    if (bills.length === 0) { toast('Nothing to export yet'); return; }
+    const esc = (v) => {
+      const s = String(v == null ? '' : v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    };
+    const headers = ['Date','Bill Name','Category','Paid By','Total','Split Among','Per Person (base)','Notes'];
+    const rows = [...bills].sort((a,b) => a.date.localeCompare(b.date) || (a.createdAt - b.createdAt)).map(b => {
+      const cents = Math.round(b.total*100);
+      const base = Math.floor(cents / b.splitAmong.length) / 100;
+      return [
+        b.date, b.name, b.category, b.paidBy, b.total.toFixed(2),
+        b.splitAmong.join('; '), base.toFixed(2), b.notes || ''
+      ].map(esc).join(',');
+    });
+    const csv = headers.map(esc).join(',') + '\n' + rows.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `splitwise-for-pros-${todayISO()}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('CSV downloaded');
+  });
+
+  $('#clearAllBtn').addEventListener('click', async () => {
+    const ok1 = await confirmModal({
+      title: 'Clear all data?',
+      text: 'This removes every bill and every roommate from this browser.',
+      confirmLabel: 'Continue', danger: true
+    });
+    if (!ok1) return;
+    const ok2 = await confirmModal({
+      title: 'Really? This is permanent.',
+      text: 'Last chance. There is no undo for this action.',
+      confirmLabel: 'Yes, wipe everything', danger: true
+    });
+    if (!ok2) return;
+    bills = []; roommates = [];
+    saveBills(); saveRoommates();
+    renderRoommates();
+    renderBills();
+    toast('All data cleared');
+  });
+
+  function init() {
+    $('#billDate').value = todayISO();
+    renderRoommates();
+    renderBills();
+  }
+  init();
+})();
+</script>
+</body>
+</html>
